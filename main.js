@@ -23,7 +23,7 @@ scene.fog = new THREE.Fog(0xfff5dd, 12, 36);
 const world = {
   width: 20,
   height: 12,
-  groundY: -3.45,
+  groundY: -2.9,
 };
 
 const camera = new THREE.OrthographicCamera(
@@ -34,7 +34,7 @@ const camera = new THREE.OrthographicCamera(
   0.1,
   100,
 );
-camera.position.set(0, 0.2, 12);
+camera.position.set(0, 0.45, 12);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.55);
 scene.add(ambientLight);
