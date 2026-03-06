@@ -154,7 +154,17 @@ function addBackground() {
   grassStrip.position.set(0, world.groundY - 0.25, -1.1);
   scene.add(grassStrip);
 
-  return { cloudGroup };
+  return {
+    cloudGroup,
+    sky,
+    sun,
+    sunHalo,
+    hillBack,
+    hillMid,
+    hillFront,
+    groundBase,
+    grassStrip,
+  };
 }
 
 function createSparkleTexture() {
@@ -367,6 +377,26 @@ const background = addBackground();
 const cat = createCat();
 scene.add(cat.root);
 
+function syncBackgroundToCamera() {
+  const visibleWidth = camera.right - camera.left;
+  const wideStretch = Math.max(1, (visibleWidth + 6) / 44);
+  const hillStretch = Math.max(1, (visibleWidth + 6) / 20);
+
+  background.sky.scale.x = wideStretch;
+  background.groundBase.scale.x = wideStretch;
+  background.grassStrip.scale.x = wideStretch;
+  sparkleBand.scale.x = wideStretch;
+  sparkleTexture.repeat.x = 3.5 * wideStretch;
+
+  background.hillBack.scale.x = hillStretch;
+  background.hillMid.scale.x = hillStretch;
+  background.hillFront.scale.x = hillStretch;
+
+  const sunX = camera.right - 3.7;
+  background.sun.position.x = sunX;
+  background.sunHalo.position.x = sunX;
+}
+
 const runner = {
   positionY: cat.root.position.y,
   velocityY: 0,
@@ -419,6 +449,7 @@ function resizeRenderer() {
   camera.top = height / 2;
   camera.bottom = -height / 2;
   camera.updateProjectionMatrix();
+  syncBackgroundToCamera();
   renderer.setSize(clientWidth, clientHeight, false);
 }
 
