@@ -375,34 +375,12 @@ function createCat() {
   body.userData.baseScaleY = body.scale.y;
   root.add(body);
 
-  const dressTop = createFlatMesh(
-    new THREE.ShapeGeometry(roundedRectShape(0.84, 0.68, 0.22)),
-    0xf4c0d4,
-  );
-  dressTop.position.set(-0.02, -0.02, 0.08);
-  root.add(dressTop);
-
   const chest = createFlatMesh(
     new THREE.ShapeGeometry(roundedRectShape(0.48, 0.42, 0.18)),
     palette.cream,
   );
   chest.position.set(-0.02, 0.08, 0.1);
   root.add(chest);
-
-  const tutuWaist = createFlatMesh(
-    new THREE.ShapeGeometry(roundedRectShape(1.02, 0.18, 0.08)),
-    0xf5acc8,
-  );
-  tutuWaist.position.set(-0.02, -0.44, 0.09);
-  root.add(tutuWaist);
-
-  const tutuScallopColor = 0xf9bdd6;
-  for (let i = 0; i < 7; i += 1) {
-    const scallop = createFlatMesh(new THREE.CircleGeometry(0.18, 16), tutuScallopColor);
-    scallop.scale.set(1.24, 0.9, 1);
-    scallop.position.set(-0.56 + i * 0.18, -0.64 + Math.abs(3 - i) * -0.012, 0.08);
-    root.add(scallop);
-  }
 
   const pawGroup = new THREE.Group();
   root.add(pawGroup);
