@@ -409,8 +409,10 @@ const runner = {
   jumpQueued: false,
   spinAngle: 0,
   spinVelocity: 0,
-  hitWidth: 1.55,
-  hitHeight: 1.75,
+  hitWidth: 1.62,
+  hitHeight: 2.45,
+  hitOffsetX: 0.18,
+  hitOffsetY: 0.34,
 };
 
 const obstacleGroup = new THREE.Group();
@@ -713,8 +715,8 @@ function checkCollisions() {
     return;
   }
 
-  const catX = cat.root.position.x + 0.18;
-  const catY = cat.root.position.y - 0.02;
+  const catX = cat.root.position.x + runner.hitOffsetX;
+  const catY = cat.root.position.y + runner.hitOffsetY;
 
   for (const obstacle of gameState.obstacles) {
     const hit = intersectsAABB(
