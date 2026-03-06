@@ -356,12 +356,60 @@ function createCrow() {
   root.add(eye);
 
   root.userData = {
+    type: "crow",
     wingLeft,
     wingRight,
     flapOffset: Math.random() * Math.PI * 2,
     bobOffset: Math.random() * Math.PI * 2,
     hitWidth: 0.88,
     hitHeight: 0.62,
+  };
+
+  return root;
+}
+
+function createPit() {
+  const root = new THREE.Group();
+
+  const rim = createFlatMesh(
+    new THREE.CircleGeometry(1.2, 28),
+    0xd4a38f,
+  );
+  rim.scale.set(1.28, 0.34, 1);
+  rim.position.set(0, world.groundY - 0.58, -0.02);
+  root.add(rim);
+
+  const hole = createFlatMesh(
+    new THREE.CircleGeometry(1, 28),
+    0x473542,
+  );
+  hole.scale.set(1.18, 0.3, 1);
+  hole.position.set(0, world.groundY - 0.6, 0.02);
+  root.add(hole);
+
+  const innerShadow = createFlatMesh(
+    new THREE.CircleGeometry(0.82, 24),
+    0x24181f,
+  );
+  innerShadow.scale.set(1.05, 0.2, 1);
+  innerShadow.position.set(0.04, world.groundY - 0.63, 0.04);
+  root.add(innerShadow);
+
+  const sparkles = [];
+  for (let i = 0; i < 4; i += 1) {
+    const sparkle = createFlatMesh(new THREE.CircleGeometry(0.06, 10), 0xfff0c9);
+    sparkle.material.opacity = 0.5;
+    sparkle.position.set(-0.75 + i * 0.5, world.groundY - 0.42 + (i % 2) * 0.05, 0.05);
+    sparkles.push(sparkle);
+    root.add(sparkle);
+  }
+
+  root.position.z = 0.12;
+  root.userData = {
+    type: "pit",
+    sparkles,
+    wobbleOffset: Math.random() * Math.PI * 2,
+    hitWidth: 2.4,
   };
 
   return root;
@@ -586,6 +634,26 @@ function spawnCrow() {
   gameState.obstacles.push(crow);
 }
 
+function spawnPit() {
+  const pit = createPit();
+  pit.position.set(camera.right + 2.8, 0, 0.12);
+  pit.scale.setScalar(0.88 + Math.random() * 0.18);
+  pit.userData.hitWidth *= pit.scale.x;
+  obstacleGroup.add(pit);
+  gameState.obstacles.push(pit);
+}
+
+function spawnObstacle() {
+  const shouldSpawnPit = gameState.score > 24 && Math.random() < 0.34;
+  if (shouldSpawnPit) {
+    spawnPit();
+    return "pit";
+  }
+
+  spawnCrow();
+  return "crow";
+}
+
 function updateParticles(delta) {
   for (let i = gameState.particles.length - 1; i >= 0; i -= 1) {
     const particle = gameState.particles[i];
@@ -654,9 +722,12 @@ function updateObstacles(delta) {
   if (gameState.isPlaying) {
     gameState.spawnTimer -= delta;
     if (gameState.spawnTimer <= 0) {
-      spawnCrow();
+      const spawnedType = spawnObstacle();
       const difficulty = Math.max(0.85, 1.6 - gameState.speed * 0.04);
-      gameState.spawnTimer = difficulty + Math.random() * 0.9;
+      gameState.spawnTimer =
+        spawnedType === "pit"
+          ? difficulty + 0.5 + Math.random() * 0.9
+          : difficulty + Math.random() * 0.9;
     }
   }
 
@@ -666,10 +737,17 @@ function updateObstacles(delta) {
       obstacle.position.x -= gameState.speed * delta;
     }
 
-    const flap = Math.sin(gameState.elapsed * 18 + obstacle.userData.flapOffset);
-    obstacle.userData.wingLeft.rotation.z = 0.3 + flap * 0.38;
-    obstacle.userData.wingRight.rotation.z = -0.3 - flap * 0.38;
-    obstacle.position.y += Math.sin(gameState.elapsed * 4 + obstacle.userData.bobOffset) * 0.0025;
+    if (obstacle.userData.type === "crow") {
+      const flap = Math.sin(gameState.elapsed * 18 + obstacle.userData.flapOffset);
+      obstacle.userData.wingLeft.rotation.z = 0.3 + flap * 0.38;
+      obstacle.userData.wingRight.rotation.z = -0.3 - flap * 0.38;
+      obstacle.position.y += Math.sin(gameState.elapsed * 4 + obstacle.userData.bobOffset) * 0.0025;
+    } else if (obstacle.userData.type === "pit") {
+      for (const sparkle of obstacle.userData.sparkles) {
+        sparkle.material.opacity =
+          0.28 + (Math.sin(gameState.elapsed * 5 + obstacle.userData.wobbleOffset) + 1) * 0.12;
+      }
+    }
 
     if (obstacle.position.x < camera.left - 4) {
       obstacleGroup.remove(obstacle);
@@ -717,18 +795,27 @@ function checkCollisions() {
 
   const catX = cat.root.position.x + runner.hitOffsetX;
   const catY = cat.root.position.y + runner.hitOffsetY;
+  const catGroundClearance = runner.positionY - (world.groundY + 0.92);
 
   for (const obstacle of gameState.obstacles) {
-    const hit = intersectsAABB(
-      catX,
-      catY,
-      runner.hitWidth,
-      runner.hitHeight,
-      obstacle.position.x,
-      obstacle.position.y,
-      obstacle.userData.hitWidth,
-      obstacle.userData.hitHeight,
-    );
+    let hit = false;
+
+    if (obstacle.userData.type === "pit") {
+      hit =
+        Math.abs(catX - obstacle.position.x) * 2 < runner.hitWidth * 0.72 + obstacle.userData.hitWidth &&
+        catGroundClearance < 0.82;
+    } else {
+      hit = intersectsAABB(
+        catX,
+        catY,
+        runner.hitWidth,
+        runner.hitHeight,
+        obstacle.position.x,
+        obstacle.position.y,
+        obstacle.userData.hitWidth,
+        obstacle.userData.hitHeight,
+      );
+    }
 
     if (hit) {
       endGame();
@@ -795,7 +882,7 @@ restartButton.addEventListener("click", restartGame);
 
 setOverlay(
   "달려라, 말랑 고양이",
-  "두 번까지 점프할 수 있어요. 두 번째 점프에서는 빙글 돌며 까마귀를 피해 넘으세요.",
+  "두 번까지 점프할 수 있어요. 두 번째 점프에서는 빙글 돌며 까마귀와 구덩이를 피해 넘으세요.",
   "시작하기",
   true,
 );
