@@ -208,144 +208,201 @@ function createCat() {
 
   const shadow = createFlatMesh(new THREE.CircleGeometry(0.8, 20), 0xd28a79);
   shadow.material.opacity = 0.28;
-  shadow.scale.set(1.28, 0.48, 1);
-  shadow.position.set(-0.18, -1.17, -0.4);
+  shadow.scale.set(1.22, 0.45, 1);
+  shadow.position.set(-0.06, -1.18, -0.4);
   root.add(shadow);
 
-  const body = createFlatMesh(
-    new THREE.ShapeGeometry(roundedRectShape(2.05, 1.46, 0.56)),
-    palette.peach,
-  );
-  body.position.set(-0.06, -0.02, 0);
-  root.add(body);
+  const headShape = (() => {
+    const shape = new THREE.Shape();
+    shape.moveTo(0, 0.96);
+    shape.quadraticCurveTo(0.9, 0.94, 0.98, 0.1);
+    shape.quadraticCurveTo(0.94, -0.72, 0.26, -0.98);
+    shape.quadraticCurveTo(0, -1.06, -0.26, -0.98);
+    shape.quadraticCurveTo(-0.94, -0.72, -0.98, 0.1);
+    shape.quadraticCurveTo(-0.9, 0.94, 0, 0.96);
+    return shape;
+  })();
 
-  const belly = createFlatMesh(
-    new THREE.ShapeGeometry(roundedRectShape(1.18, 0.86, 0.34)),
-    palette.cream,
-  );
-  belly.position.set(0.02, -0.2, 0.06);
-  root.add(belly);
-
-  const head = createFlatMesh(new THREE.CircleGeometry(0.92, 32), palette.peach);
-  head.scale.set(1.03, 0.98, 1);
-  head.position.set(0.82, 0.82, 0.08);
+  const head = createFlatMesh(new THREE.ShapeGeometry(headShape), palette.peach);
+  head.position.set(0.82, 0.9, 0.08);
+  head.userData.baseY = head.position.y;
   root.add(head);
 
   const earGeometry = new THREE.ShapeGeometry(
     (() => {
       const shape = new THREE.Shape();
-      shape.moveTo(0, 0.4);
-      shape.lineTo(0.35, -0.38);
-      shape.lineTo(-0.35, -0.38);
+      shape.moveTo(0, 0.56);
+      shape.lineTo(0.36, -0.4);
+      shape.lineTo(-0.36, -0.4);
       shape.closePath();
       return shape;
     })(),
   );
 
   const earLeft = createFlatMesh(earGeometry, palette.peachDark);
-  earLeft.position.set(0.36, 1.64, 0.06);
-  earLeft.rotation.z = -0.22;
+  earLeft.position.set(0.16, 1.78, 0.06);
+  earLeft.rotation.z = -0.18;
   root.add(earLeft);
 
   const earRight = createFlatMesh(earGeometry, palette.peachDark);
-  earRight.position.set(1.2, 1.62, 0.06);
-  earRight.rotation.z = 0.22;
+  earRight.position.set(1.44, 1.76, 0.06);
+  earRight.rotation.z = 0.18;
   root.add(earRight);
 
-  const innerEarLeft = createFlatMesh(
-    new THREE.ShapeGeometry(
-      (() => {
-        const shape = new THREE.Shape();
-        shape.moveTo(0, 0.24);
-        shape.lineTo(0.18, -0.2);
-        shape.lineTo(-0.18, -0.2);
-        shape.closePath();
-        return shape;
-      })(),
-    ),
-    0xffd0dc,
+  const innerEarShape = new THREE.ShapeGeometry(
+    (() => {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, 0.3);
+      shape.lineTo(0.18, -0.22);
+      shape.lineTo(-0.18, -0.22);
+      shape.closePath();
+      return shape;
+    })(),
   );
-  innerEarLeft.position.set(0.35, 1.56, 0.08);
-  innerEarLeft.rotation.z = -0.18;
+
+  const innerEarLeft = createFlatMesh(innerEarShape, 0xffc4d6);
+  innerEarLeft.position.set(0.16, 1.7, 0.08);
+  innerEarLeft.rotation.z = -0.16;
   root.add(innerEarLeft);
 
   const innerEarRight = innerEarLeft.clone();
-  innerEarRight.position.set(1.19, 1.55, 0.08);
-  innerEarRight.rotation.z = 0.18;
+  innerEarRight.position.set(1.44, 1.69, 0.08);
+  innerEarRight.rotation.z = 0.16;
   root.add(innerEarRight);
 
-  const foreheadPatch = createFlatMesh(
-    new THREE.CircleGeometry(0.18, 18),
-    0xffdfb0,
-  );
-  foreheadPatch.scale.set(1, 0.72, 1);
-  foreheadPatch.position.set(0.84, 1.08, 0.14);
-  root.add(foreheadPatch);
+  const foreheadStripeGeometry = new THREE.ShapeGeometry(roundedRectShape(0.14, 0.52, 0.07));
+  for (const [x, rot] of [
+    [0.62, -0.42],
+    [0.82, -0.16],
+    [1.02, 0.16],
+  ]) {
+    const stripe = createFlatMesh(foreheadStripeGeometry, 0x8f6858);
+    stripe.position.set(x, 1.24, 0.16);
+    stripe.rotation.z = rot;
+    root.add(stripe);
+  }
 
-  const eyeLeft = createFlatMesh(new THREE.CircleGeometry(0.085, 14), 0x3c2d38);
-  eyeLeft.scale.set(0.9, 1.15, 1);
-  eyeLeft.position.set(0.54, 0.9, 0.22);
+  const browShape = new THREE.ShapeGeometry(roundedRectShape(0.18, 0.06, 0.03));
+  const browLeft = createFlatMesh(browShape, 0xa88068);
+  browLeft.position.set(0.44, 1.2, 0.18);
+  browLeft.rotation.z = -0.16;
+  root.add(browLeft);
+
+  const browRight = browLeft.clone();
+  browRight.position.x = 1.18;
+  browRight.rotation.z = 0.16;
+  root.add(browRight);
+
+  const eyeLeft = createFlatMesh(new THREE.CircleGeometry(0.23, 20), 0x272530);
+  eyeLeft.position.set(0.46, 0.92, 0.22);
   root.add(eyeLeft);
 
   const eyeRight = eyeLeft.clone();
-  eyeRight.position.x = 1;
+  eyeRight.position.x = 1.14;
   root.add(eyeRight);
 
-  const eyeHighlightLeft = createFlatMesh(new THREE.CircleGeometry(0.028, 10), 0xffffff);
-  eyeHighlightLeft.position.set(0.5, 0.97, 0.26);
-  root.add(eyeHighlightLeft);
+  const pupilHighlightLarge = createFlatMesh(new THREE.CircleGeometry(0.06, 12), 0xffffff);
+  pupilHighlightLarge.position.set(0.38, 1.02, 0.26);
+  root.add(pupilHighlightLarge);
 
-  const eyeHighlightRight = eyeHighlightLeft.clone();
-  eyeHighlightRight.position.x = 0.96;
-  root.add(eyeHighlightRight);
+  const pupilHighlightLargeRight = pupilHighlightLarge.clone();
+  pupilHighlightLargeRight.position.x = 1.06;
+  root.add(pupilHighlightLargeRight);
+
+  const pupilHighlightSmall = createFlatMesh(new THREE.CircleGeometry(0.028, 10), 0xffffff);
+  pupilHighlightSmall.position.set(0.54, 0.82, 0.26);
+  root.add(pupilHighlightSmall);
+
+  const pupilHighlightSmallRight = pupilHighlightSmall.clone();
+  pupilHighlightSmallRight.position.x = 1.22;
+  root.add(pupilHighlightSmallRight);
 
   const muzzle = createFlatMesh(
-    new THREE.ShapeGeometry(roundedRectShape(0.72, 0.42, 0.2)),
+    new THREE.ShapeGeometry(roundedRectShape(0.7, 0.44, 0.22)),
     palette.cream,
   );
-  muzzle.position.set(0.77, 0.56, 0.16);
+  muzzle.position.set(0.8, 0.52, 0.16);
   root.add(muzzle);
 
-  const nose = createFlatMesh(new THREE.CircleGeometry(0.07, 12), 0xf67b9d);
-  nose.scale.set(1, 0.72, 1);
-  nose.position.set(0.77, 0.63, 0.24);
+  const nose = createFlatMesh(new THREE.CircleGeometry(0.072, 12), 0x2f2932);
+  nose.scale.set(1.05, 0.72, 1);
+  nose.position.set(0.8, 0.63, 0.24);
   root.add(nose);
 
   const mouthLeft = createFlatMesh(
-    new THREE.ShapeGeometry(roundedRectShape(0.12, 0.05, 0.03)),
-    0xc56a84,
+    new THREE.ShapeGeometry(roundedRectShape(0.14, 0.05, 0.025)),
+    0x2f2932,
   );
-  mouthLeft.position.set(0.71, 0.49, 0.24);
-  mouthLeft.rotation.z = -0.52;
+  mouthLeft.position.set(0.73, 0.45, 0.24);
+  mouthLeft.rotation.z = -0.62;
   root.add(mouthLeft);
 
   const mouthRight = mouthLeft.clone();
-  mouthRight.position.x = 0.83;
-  mouthRight.rotation.z = 0.52;
+  mouthRight.position.x = 0.87;
+  mouthRight.rotation.z = 0.62;
   root.add(mouthRight);
 
-  const whiskerGeometry = new THREE.ShapeGeometry(roundedRectShape(0.26, 0.03, 0.02));
+  const whiskerGeometry = new THREE.ShapeGeometry(roundedRectShape(0.38, 0.03, 0.02));
   for (const [x, y, rot] of [
-    [0.42, 0.61, -0.16],
-    [0.42, 0.5, -0.04],
-    [1.12, 0.61, 0.16],
-    [1.12, 0.5, 0.04],
+    [0.1, 0.66, -0.18],
+    [0.12, 0.5, -0.03],
+    [0.12, 0.34, 0.12],
+    [1.5, 0.66, 0.18],
+    [1.48, 0.5, 0.03],
+    [1.46, 0.34, -0.12],
   ]) {
-    const whisker = createFlatMesh(whiskerGeometry, 0xe7b3ab);
+    const whisker = createFlatMesh(whiskerGeometry, 0x64535b);
     whisker.position.set(x, y, 0.14);
     whisker.rotation.z = rot;
     root.add(whisker);
   }
 
-  const blushLeft = createFlatMesh(new THREE.CircleGeometry(0.13, 14), 0xffa3b9);
-  blushLeft.material.opacity = 0.6;
-  blushLeft.scale.set(1.15, 0.82, 1);
-  blushLeft.position.set(0.33, 0.59, 0.18);
+  const blushLeft = createFlatMesh(new THREE.CircleGeometry(0.12, 14), 0xffadc1);
+  blushLeft.material.opacity = 0.65;
+  blushLeft.scale.set(1.18, 0.82, 1);
+  blushLeft.position.set(0.22, 0.56, 0.18);
   root.add(blushLeft);
 
   const blushRight = blushLeft.clone();
-  blushRight.position.x = 1.19;
+  blushRight.position.x = 1.38;
   root.add(blushRight);
+
+  const body = createFlatMesh(
+    new THREE.ShapeGeometry(roundedRectShape(1.34, 1.06, 0.34)),
+    palette.peach,
+  );
+  body.position.set(-0.02, -0.02, 0);
+  body.userData.baseScaleY = body.scale.y;
+  root.add(body);
+
+  const dressTop = createFlatMesh(
+    new THREE.ShapeGeometry(roundedRectShape(0.84, 0.68, 0.22)),
+    0xf4c0d4,
+  );
+  dressTop.position.set(-0.02, -0.02, 0.08);
+  root.add(dressTop);
+
+  const chest = createFlatMesh(
+    new THREE.ShapeGeometry(roundedRectShape(0.48, 0.42, 0.18)),
+    palette.cream,
+  );
+  chest.position.set(-0.02, 0.08, 0.1);
+  root.add(chest);
+
+  const tutuWaist = createFlatMesh(
+    new THREE.ShapeGeometry(roundedRectShape(1.02, 0.18, 0.08)),
+    0xf5acc8,
+  );
+  tutuWaist.position.set(-0.02, -0.44, 0.09);
+  root.add(tutuWaist);
+
+  const tutuScallopColor = 0xf9bdd6;
+  for (let i = 0; i < 7; i += 1) {
+    const scallop = createFlatMesh(new THREE.CircleGeometry(0.18, 16), tutuScallopColor);
+    scallop.scale.set(1.24, 0.9, 1);
+    scallop.position.set(-0.56 + i * 0.18, -0.64 + Math.abs(3 - i) * -0.012, 0.08);
+    root.add(scallop);
+  }
 
   const pawGroup = new THREE.Group();
   root.add(pawGroup);
@@ -353,39 +410,52 @@ function createCat() {
   const paws = [];
   for (let i = 0; i < 4; i += 1) {
     const paw = createFlatMesh(
-      new THREE.ShapeGeometry(roundedRectShape(0.26, 0.86, 0.15)),
+      new THREE.ShapeGeometry(roundedRectShape(0.22, 0.86, 0.12)),
       palette.cream,
     );
-    paw.position.set(-0.72 + i * 0.42, -0.93, 0.02);
+    paw.position.set(-0.52 + i * 0.34, -0.96, 0.02);
     paw.userData.baseY = paw.position.y;
     pawGroup.add(paw);
     paws.push(paw);
   }
 
-  const tail = createFlatMesh(
-    new THREE.ShapeGeometry(roundedRectShape(1.26, 0.34, 0.17)),
-    palette.peachDark,
+  const tail = new THREE.Group();
+  const tailCore = createFlatMesh(
+    new THREE.ShapeGeometry(roundedRectShape(1.12, 0.26, 0.13)),
+    0xd7b086,
   );
-  tail.position.set(-1.35, 0.34, -0.02);
-  tail.rotation.z = 0.78;
+  tail.add(tailCore);
+
+  for (const x of [-0.24, 0.02, 0.28]) {
+    const stripe = createFlatMesh(
+      new THREE.ShapeGeometry(roundedRectShape(0.1, 0.26, 0.04)),
+      0x9b735d,
+    );
+    stripe.position.x = x;
+    tail.add(stripe);
+  }
+
+  tail.position.set(-1.12, -0.08, -0.02);
+  tail.rotation.z = 0.62;
+  tail.userData.baseRotation = tail.rotation.z;
   root.add(tail);
 
-  const bowCenter = createFlatMesh(new THREE.CircleGeometry(0.09, 14), palette.pink);
-  bowCenter.position.set(0.1, 0.34, 0.16);
-  root.add(bowCenter);
-
-  const bowWingLeft = createFlatMesh(
+  const headBowLeft = createFlatMesh(
     new THREE.ShapeGeometry(roundedRectShape(0.26, 0.2, 0.08)),
     palette.pink,
   );
-  bowWingLeft.position.set(-0.04, 0.35, 0.12);
-  bowWingLeft.rotation.z = -0.42;
-  root.add(bowWingLeft);
+  headBowLeft.position.set(0.05, 1.56, 0.16);
+  headBowLeft.rotation.z = -0.54;
+  root.add(headBowLeft);
 
-  const bowWingRight = bowWingLeft.clone();
-  bowWingRight.position.x = 0.24;
-  bowWingRight.rotation.z = 0.42;
-  root.add(bowWingRight);
+  const headBowRight = headBowLeft.clone();
+  headBowRight.position.x = 0.29;
+  headBowRight.rotation.z = 0.54;
+  root.add(headBowRight);
+
+  const headBowCenter = createFlatMesh(new THREE.CircleGeometry(0.075, 12), palette.pink);
+  headBowCenter.position.set(0.17, 1.56, 0.18);
+  root.add(headBowCenter);
 
   root.position.set(-5.5, world.groundY + 0.92, 0.5);
   root.scale.setScalar(0.96);
@@ -783,9 +853,9 @@ function updateCat(delta) {
 
   const bounce = gameState.isPlaying ? Math.sin(gameState.elapsed * 13) : 0;
   const legWave = gameState.isPlaying ? Math.sin(gameState.elapsed * 20) : 0;
-  cat.body.scale.y = 1 + Math.abs(bounce) * 0.02;
-  cat.head.position.y = 0.72 + Math.max(0, bounce) * 0.07;
-  cat.tail.rotation.z = 0.58 + legWave * 0.18;
+  cat.body.scale.y = cat.body.userData.baseScaleY + Math.abs(bounce) * 0.02;
+  cat.head.position.y = cat.head.userData.baseY + Math.max(0, bounce) * 0.07;
+  cat.tail.rotation.z = cat.tail.userData.baseRotation + legWave * 0.18;
 
   cat.paws.forEach((paw, index) => {
     const phase = index % 2 === 0 ? 1 : -1;
