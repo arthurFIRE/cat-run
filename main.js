@@ -377,6 +377,10 @@ const background = addBackground();
 const cat = createCat();
 scene.add(cat.root);
 
+function getRunnerStartX() {
+  return window.innerWidth <= 820 ? -4.9 : -5.5;
+}
+
 function syncBackgroundToCamera() {
   const visibleWidth = camera.right - camera.left;
   const wideStretch = Math.max(1, (visibleWidth + 6) / 44);
@@ -450,6 +454,7 @@ function resizeRenderer() {
   camera.bottom = -height / 2;
   camera.updateProjectionMatrix();
   syncBackgroundToCamera();
+  cat.root.position.x = getRunnerStartX();
   renderer.setSize(clientWidth, clientHeight, false);
 }
 
