@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Cat Run</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-card">
+        <div class="hud">
+          <div class="hud__group">
+            <p class="hud__label">Score</p>
+            <p class="hud__value" id="score">0</p>
+          </div>
+          <div class="hud__group hud__group--center">
+            <h1>Cat Run</h1>
+            <p class="hud__hint">스페이스 / 위쪽 화살표 / 터치로 점프</p>
+          </div>
+          <div class="hud__group hud__group--right">
+            <p class="hud__label">Best</p>
+            <p class="hud__value" id="best-score">0</p>
+          </div>
+        </div>
+
+        <div class="stage-shell">
+          <canvas id="game"></canvas>
+
+          <div class="overlay" id="overlay">
+            <div class="overlay__panel">
+              <p class="overlay__eyebrow">A cozy rooftop sprint</p>
+              <h2 id="overlay-title">달려라, 말랑 고양이</h2>
+              <p id="overlay-text">
+                까마귀를 피해 달리세요. 공중에서 한 번 더 점프하면 빙글 돌며 2단 점프합니다.
+              </p>
+              <button id="action-button" type="button">시작하기</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="controls__text">
+            <span>1단 점프</span>
+            <span>2단 점프 + 스핀</span>
+            <span>까마귀 피하기</span>
+          </div>
+          <div class="touch-controls">
+            <button class="touch-controls__button" id="jump-button" type="button">
+              Jump
+            </button>
+            <button class="touch-controls__button touch-controls__button--ghost" id="restart-button" type="button">
+              Restart
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
