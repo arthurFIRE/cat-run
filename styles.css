@@ -30,21 +30,24 @@ body {
 }
 
 body {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: clamp(12px, 2vh, 24px);
 }
 
 .game-card {
   width: min(1100px, 100%);
   display: grid;
-  gap: 16px;
-  padding: 20px;
+  gap: clamp(12px, 1.5vh, 16px);
+  padding: clamp(14px, 2vh, 20px);
+  max-height: calc(100dvh - clamp(24px, 4vh, 48px));
   border-radius: 32px;
   background: var(--panel);
   border: 1px solid rgba(255, 255, 255, 0.7);
@@ -101,7 +104,7 @@ body {
 .stage-shell {
   position: relative;
   overflow: hidden;
-  min-height: min(72vh, 720px);
+  min-height: clamp(320px, 60vh, 680px);
   border-radius: 30px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.18)),
@@ -114,7 +117,7 @@ body {
 #game {
   display: block;
   width: 100%;
-  height: min(72vh, 720px);
+  height: clamp(320px, 60vh, 680px);
 }
 
 .overlay {
@@ -245,8 +248,8 @@ button {
 
   #game,
   .stage-shell {
-    min-height: 58vh;
-    height: 58vh;
+    min-height: clamp(280px, 50vh, 480px);
+    height: clamp(280px, 50vh, 480px);
   }
 
   .controls {
@@ -259,5 +262,13 @@ button {
 
   .touch-controls__button {
     flex: 1 1 0;
+  }
+}
+
+@media (max-height: 920px) and (min-width: 821px) {
+  #game,
+  .stage-shell {
+    min-height: clamp(300px, 52vh, 560px);
+    height: clamp(300px, 52vh, 560px);
   }
 }
